@@ -1,5 +1,3 @@
-'use strict';
-
 const serverlessHTTP = require('serverless-http');
 const express = require('express');
 const cors = require('cors');
@@ -7,35 +5,48 @@ const bodyParser = require('body-paser');
 const mysql = require('mysql');
 
 const connection = mysql.createConnection({
-  host:'',
-  user:'',
-  password: '',
-  database: ''
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: 'todo_db',
 });
 
 
 const app = express();
-app.use(cors())
+app.use(cors());
 app.use(bodyParser.json());
 
-app.get('/tasks', function (request, response) {
-
-  response.status(200).send('Hello from API');
+app.get('/tasks', (request, response) => {
+  connection.query('SELECT * FROM tasks', (err, data) => {
+    if (err) {
+      console.log('Error from MySQL', err);
+      response.status(500).send(err);
+    } else {
+      response.status(200).send(data);
+    }
+  });
 });
 
-app.put('/tasks/:id', function (request, response) {
+// update tasks
+app.put('/tasks/:id', (request, response) => {
   const id = request.params.id;
-  const data 
-  response.status(200).send('Task updated');
+  response.status(200).send(`Task with id: ${id}updated`);
 });
 
-app.post('/tasks', function (request, response) {
-  const data = request.body;
-  response.status(201).send(`Task of ${data.text} added`);
+// add new task
+app.post('/tasks', (request, response) => {
+  const query = 'INSERT INTO tasks () VALUES (?, ?, ?)';
+  connection.query(query, (err, data) => {
+    if (err) {
+      console.log('Error from MySQL', err);
+      response.status(500).send(err);
+    } else {
+      response.status(201).send(`Task of ${data.text} added`);
+    }
+  });
 });
 
-app.delete('/tasks/:id', function (request, response) {
-
+app.delete('/tasks/:id', (request, response) => {
   const id = request.params.id;
   response.status(200).send(`Task  ${id} deleted`);
 });
