@@ -19,12 +19,13 @@ app.put('/tasks/:id', function (request, response) {
 
 app.post('/tasks', function (request, response) {
 
-  response.status(200).send('Task added');
+  response.status(201).send('Task added');
 });
 
 app.delete('/tasks/:id', function (request, response) {
 
-  response.status(200).send('Task deleted');
+  const id = request.params.id;
+  response.status(200).send(`Task  ${id} deleted`);
 });
 
 module.exports.app = serverlessHTTP(app);
