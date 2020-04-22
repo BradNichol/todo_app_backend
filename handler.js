@@ -4,10 +4,19 @@ const serverlessHTTP = require('serverless-http');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-paser');
+const mysql = require('mysql');
+
+const connection = mysql.createConnection({
+  host:'',
+  user:'',
+  password: '',
+  database: ''
+});
 
 
 const app = express();
 app.use(cors())
+app.use(bodyParser.json());
 
 app.get('/tasks', function (request, response) {
 
