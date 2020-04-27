@@ -12,7 +12,6 @@ const pool = mysql.createPool({
   connectionLimit: 10,
 });
 
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -36,27 +35,32 @@ app.put('/tasks/:id', (request, response) => {
 
 // add new task
 app.post('/tasks', (request, response) => {
-
   // get data to be entered into db
   const data = request.body;
 
   const query = 'INSERT INTO tasks (task, type_id, due_date, user_id) VALUES (?, ?, ?, ?)';
-  pool.query(query, [data.task, data.type_id, data.due_date, data.user_id], (err, results) => {
-    if (err) {
-      console.log('Error from MySQL', err);
-      response.status(500).send(err);
-    } else {
-
-      pool.query(`SELECT * FROM tasks WHERE task_id = ${results.insertId}`, (err, results) => {
-        if (err) {
-          console.log('Error from MySQL', err);
-          response.status(500).send(err);
-        } else {
-          response.status(201).send(results[0]);
-        }
-      })
+  pool.query(
+    query,
+    [data.task, data.type_id, data.due_date, data.user_id],
+    (err, results) => {
+      if (err) {
+        console.log('Error from MySQL', err);
+        response.status(500).send(err);
+      } else {
+        pool.query(
+          `SELECT * FROM tasks WHERE task_id = ${results.insertId}`,
+          (err, results) => {
+            if (err) {
+              console.log('Error from MySQL', err);
+              response.status(500).send(err);
+            } else {
+              response.status(201).send(results[0]);
+            }
+          }
+        );
+      }
     }
-  });
+  );
 });
 
 app.delete('/tasks/:id', (request, response) => {
