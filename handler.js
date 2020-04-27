@@ -36,13 +36,17 @@ app.put('/tasks/:id', (request, response) => {
 
 // add new task
 app.post('/tasks', (request, response) => {
-  const query = 'INSERT INTO tasks () VALUES (?, ?, ?)';
-  pool.query(query, (err, data) => {
+
+  // get data to be entered into db
+  const data = request.body;
+
+  const query = 'INSERT INTO tasks (task, type_id, due_date, user_id) VALUES (?, ?, ?, ?)';
+  pool.query(query, [data.task, data.type_id, data.due_date, data.user_id], (err, results) => {
     if (err) {
       console.log('Error from MySQL', err);
       response.status(500).send(err);
     } else {
-      response.status(201).send(`Task of ${data.text} added`);
+      response.status(201).send(`Task of ${data.task} added`);
     }
   });
 });
