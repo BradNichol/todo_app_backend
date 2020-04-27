@@ -29,7 +29,7 @@ app.get('/tasks', (request, response) => {
 
 // update tasks
 app.put('/tasks/:id', (request, response) => {
-  const id = request.params.id;
+  const { id } = request.params.id;
   response.status(200).send(`Task with id: ${id}updated`);
 });
 
@@ -63,9 +63,22 @@ app.post('/tasks', (request, response) => {
   );
 });
 
+// delete tasks
 app.delete('/tasks/:id', (request, response) => {
-  const id = request.params.id;
-  response.status(200).send(`Task  ${id} deleted`);
+  const { id } = request.params;
+
+  const query = 'DELETE FROM tasks WHERE task_id = ?';
+  pool.query(
+    query, id,
+    (err, results) => {
+      if (err) {
+        console.log('Error deleting from MySQL', err);
+        response.status(500).send(err);
+      } else {
+        response.status(200).send(`Task  ${id} deleted`);
+      }
+    }
+  )
 });
 
 module.exports.app = serverlessHTTP(app);
