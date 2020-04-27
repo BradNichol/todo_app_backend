@@ -29,8 +29,22 @@ app.get('/tasks', (request, response) => {
 
 // update tasks
 app.put('/tasks/:id', (request, response) => {
-  const { id } = request.params.id;
-  response.status(200).send(`Task with id: ${id}updated`);
+  const { id } = request.params;
+  const data = request.body;
+
+  const query = 'UPDATE tasks SET completed = ? WHERE task_id = ?';
+  pool.query(
+    query,
+    [data.completed, id],
+    (err, results) => {
+      if (err) {
+        console.log('MySQL error. Could not update', err);
+        response.status(500).send(err);
+      } else {
+        response.status(200).send(`Task updated.`)
+      }
+    }
+  )
 });
 
 // add new task
