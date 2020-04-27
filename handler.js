@@ -46,7 +46,15 @@ app.post('/tasks', (request, response) => {
       console.log('Error from MySQL', err);
       response.status(500).send(err);
     } else {
-      response.status(201).send(`Task of ${data.task} added`);
+
+      pool.query(`SELECT * FROM tasks WHERE task_id = ${results.insertId}`, (err, results) => {
+        if (err) {
+          console.log('Error from MySQL', err);
+          response.status(500).send(err);
+        } else {
+          response.status(201).send(results[0]);
+        }
+      })
     }
   });
 });
