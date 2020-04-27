@@ -41,7 +41,7 @@ app.put('/tasks/:id', (request, response) => {
         console.log('MySQL error. Could not update', err);
         response.status(500).send(err);
       } else {
-        response.status(200).send(`Task updated.`)
+        response.status(200).send(`Task ${id} was updated to ${JSON.stringify(data.completed)}`)
       }
     }
   )
